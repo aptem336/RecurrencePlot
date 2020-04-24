@@ -7,35 +7,52 @@ import java.text.NumberFormat;
 
 public class RecurrencePlotFrame extends JFrame {
 
-    private static final int CONTROL_PANEL_WIDTH = 200;
-    private static final int RECURRENCE_PLOT_SIZE = 800;
-
     public static void main(String[] args) {
         //инициализируем главный фрейм
         RecurrencePlotFrame me = new RecurrencePlotFrame();
         me.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        me.setLayout(new BorderLayout());
-        me.setSize(RECURRENCE_PLOT_SIZE + CONTROL_PANEL_WIDTH,
-                RECURRENCE_PLOT_SIZE);
+        me.getContentPane().setLayout(new GridLayout(1, 3));
+        me.setSize(1800,
+                600);
         me.setLocationRelativeTo(null);
         me.setResizable(false);
 
+        //инициализруем панель с графиком
+        JPanel signalPanel = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                Double[] timeSeries = Data.getTimeSeries();
+                double max = -Double.MAX_VALUE;
+                double min = Double.MAX_VALUE;
+                for (Double timeSeriesSignal : timeSeries) {
+                    max = Math.max(max, timeSeriesSignal);
+                    min = Math.min(min, timeSeriesSignal);
+                }
+                double dx = (double) (getWidth() - 10) / timeSeries.length;
+                double dy = (getHeight() - 10) / Math.abs(max - min);
+                for (int i = 0; i < timeSeries.length - 1; i++) {
+                    g.drawLine((int) (i * dx), (int) (timeSeries[i] * dy) + getHeight() / 2,
+                            (int) ((i + 1) * dx), (int) (timeSeries[i + 1] * dy) + getHeight() / 2);
+                }
+            }
+        };
+        me.add(signalPanel);
+
         //инициализруем панель с изображением
-        JPanel imagePanel = new JPanel() {
+        JPanel recurrencePlotImagePanel = new JPanel() {
             @Override
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
                 g.drawImage(Data.getRecurrencePlotImage(), 0, 0,
-                        RECURRENCE_PLOT_SIZE, RECURRENCE_PLOT_SIZE,
+                        getWidth() - 10, getHeight() - 10,
                         null);
             }
         };
-        imagePanel.setSize(RECURRENCE_PLOT_SIZE, RECURRENCE_PLOT_SIZE);
-        me.add(imagePanel, BorderLayout.CENTER);
+        me.add(recurrencePlotImagePanel);
 
         //инициализруем панель с контроллами
         JPanel controlsPanel = new JPanel();
-        controlsPanel.setSize(CONTROL_PANEL_WIDTH, RECURRENCE_PLOT_SIZE);
         controlsPanel.setLayout(new BoxLayout(controlsPanel, BoxLayout.PAGE_AXIS));
 
         NumberFormatter timeSeriesFileIndexFormatter = new NumberFormatter(NumberFormat.getIntegerInstance());
@@ -51,14 +68,26 @@ public class RecurrencePlotFrame extends JFrame {
         DNumberFormatter.setMinimum(2);
         JTextField DTextField = new BoundFormattedJTextField<>(DNumberFormatter, Data::getD, Data::setD, Integer::parseInt);
 
-//        ButtonGroup lenCalculationMethodButtonGroup = new ButtonGroup();
-//        lenCalculationMethodButtonGroup.add(new JRadioButton("Euclid"));
-//        lenCalculationMethodButtonGroup.add(new JRadioButton("Taxicab"));
-//        lenCalculationMethodButtonGroup.add(new JRadioButton("Infinity"));
+        JRadioButton euclid = new JRadioButton("Euclid");
+        JRadioButton taxicab = new JRadioButton("Taxicab");
+        JRadioButton infinity = new JRadioButton("Infinity");
+
+        ButtonGroup lenCalculationMethodButtonsGroup = new ButtonGroup();
+        lenCalculationMethodButtonsGroup.add(euclid);
+        lenCalculationMethodButtonsGroup.add(taxicab);
+        lenCalculationMethodButtonsGroup.add(infinity);
+        lenCalculationMethodButtonsGroup.setSelected(euclid.getModel(), true);
+
+        JPanel lenCalculationMethodButtonsPanel = new JPanel();
+        lenCalculationMethodButtonsPanel.add(euclid);
+        lenCalculationMethodButtonsPanel.add(taxicab);
+        lenCalculationMethodButtonsPanel.add(infinity);
+
+        euclid.addActionListener(e -> Data.setLenCalculationMethod(new LenCalculationMethod.EuclidCalculationMethod()));
+        taxicab.addActionListener(e -> Data.setLenCalculationMethod(new LenCalculationMethod.TaxicabCalculationMethod()));
+        infinity.addActionListener(e -> Data.setLenCalculationMethod(new LenCalculationMethod.InfinityCalculationMethod()));
 
         NumberFormatter blackPointsPercentNumberFormatter = new NumberFormatter(NumberFormat.getPercentInstance());
-//        blackPointsPercentNumberFormatter.setMinimum(0);
-//        blackPointsPercentNumberFormatter.setMaximum(1);
         JTextField blackPointsPercentTextField = new BoundFormattedJTextField<>(blackPointsPercentNumberFormatter, Data::getBlackPointsPercent, Data::setBlackPointsPercent, Double::parseDouble);
 
         controlsPanel.add(new JLabel("timeSeries index (1-8)"));
@@ -67,15 +96,18 @@ public class RecurrencePlotFrame extends JFrame {
         controlsPanel.add(dTextField);
         controlsPanel.add(new JLabel("D >= 2"));
         controlsPanel.add(DTextField);
-        //controlsPanel.add(lenCalculationMethodButtonGroup);
         controlsPanel.add(new JLabel("black points percent"));
         controlsPanel.add(blackPointsPercentTextField);
+        controlsPanel.add(lenCalculationMethodButtonsPanel);
 
         JButton updateButton = new JButton("UPDATE");
-        updateButton.addActionListener(e -> {Data.updateRecurrencePlotImage(); me.repaint();});
+        updateButton.addActionListener(e -> {
+            Data.updateRecurrencePlotImage();
+            me.repaint();
+        });
         controlsPanel.add(updateButton);
 
-        me.add(controlsPanel, BorderLayout.LINE_END);
+        me.add(controlsPanel);
         me.setVisible(true);
     }
 }

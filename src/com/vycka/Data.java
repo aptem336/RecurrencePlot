@@ -16,12 +16,18 @@ public class Data {
         return recurrencePlotImage;
     }
 
+    private static Double[] timeSeries;
+
+    public static Double[] getTimeSeries() {
+        return timeSeries;
+    }
+
     static {
         updateRecurrencePlotImage();
     }
 
     public static void updateRecurrencePlotImage() {
-        Double[] timeSeries = new Double[0];
+        timeSeries = new Double[0];
         try {
             timeSeries = RecurrencePlot.readTimeSeries(timeSeriesFileIndex);
         } catch (IOException e) {
