@@ -1,94 +1,92 @@
 package com.vycka;
 
-import javax.swing.*;
-import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 
-public class RecurrencePlot extends JFrame {
-
-    public static void main(String[] args) throws IOException {
-        //читаем данные из файла
-        List<Double> TSList = new ArrayList<>();
-        BufferedReader TSBufferedReader = new BufferedReader(new FileReader("resources/8"));
+public class RecurrencePlot {
+    /**
+     * Чтение массива значений сигнала из файла
+     *
+     * @param timeSeriesFileIndex индекс файла
+     * @return массив значений сигнала
+     * @throws IOException ошибка чтения
+     */
+    public static Double[] readTimeSeries(Integer timeSeriesFileIndex) throws IOException {
+        ArrayList<Double> timeSeries = new ArrayList<>();
+        BufferedReader timeSeriesBufferedReader = new BufferedReader(new FileReader("resources/" + timeSeriesFileIndex));
         String line;
-        while ((line = TSBufferedReader.readLine()) != null) {
-            TSList.add(Double.parseDouble(line));
+        while ((line = timeSeriesBufferedReader.readLine()) != null) {
+            timeSeries.add(Double.parseDouble(line));
         }
-        Double[] TS = TSList.toArray(new Double[0]);
-        //инициализируем фрейм
-        RecurrencePlot me = new RecurrencePlot();
-        me.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        me.setLayout(new BorderLayout());
-        me.setSize(1000, 800);
-        me.setLocationRelativeTo(null);
-        //инициализруем панель с контроллами
-        JPanel controlsPanel = new JPanel();
-        controlsPanel.setSize(200, 800);
-        me.add(controlsPanel, BorderLayout.LINE_END);
-        //инициализируем панель с диаграммой
-        double R = 1;
-        BufferedImage imgEuclid = buildImage(TS, (v1, v2) -> Math.hypot(v2.x - v1.x, v2.y - v1.y), R);
-        BufferedImage imgManhattan = buildImage(TS, (v1, v2) -> Math.abs(v1.x - v2.x) + Math.abs(v1.y - v2.y), R);
-        BufferedImage imgInfinity = buildImage(TS, (v1, v2) -> Math.max(v1.x - v2.x, v1.y - v2.y), R);//Q
-        JPanel diagramPanel = new JPanel() {
-            @Override
-            protected void paintComponent(Graphics g) {
-                g.drawImage(imgEuclid, 0, 0, 800, 800, null);
-            }
-        };
-        diagramPanel.setSize(800, 800);
-        me.add(diagramPanel, BorderLayout.CENTER);
-
-        me.setVisible(true);
+        return timeSeries.toArray(new Double[0]);
     }
 
-    private static BufferedImage buildImage(Double[] TS, LenCalculationStrategy lenCalculationStrategy, double R) {
-        Vector[] vectors = new Vector[TS.length - 1];
-        for (int i = 0; i < TS.length - 1; i++) {
-            vectors[i] = new Vector(TS[i], TS[i + 1]);
-        }
-        BufferedImage img = new BufferedImage(vectors.length, vectors.length, BufferedImage.TYPE_INT_RGB);
-        for (int i = 0; i < vectors.length; i++) {
-            for (int j = 0; j < vectors.length; j++) {
-                img.setRGB(i, j, lenCalculationStrategy.calc(vectors[i], vectors[j]) > R ? 0 : 0xFFFFFF);
+    /**
+     * Формирует вектора из из значений сигнала
+     *
+     * @param timeSeries массив значений сигнала
+     * @param D          количество сигналов в наборе
+     * @param d          "расстояние" между сигналами в наборе
+     * @return массив котежей из значений сигнала
+     */
+    public static Double[][] collectTimeSeriesCorteges(Double[] timeSeries, Integer D, Integer d) {
+        Double[][] timerSeriesVectors = new Double[timeSeries.length - (D - 1) * d][D];
+        for (int i = 0; i < timerSeriesVectors.length; i++) {
+            for (int j = 0; j < D; j++) {
+                timerSeriesVectors[i][j] = timeSeries[i + j * d];
             }
         }
-        return img;
+        return timerSeriesVectors;
     }
 
-    private interface LenCalculationStrategy {
-        double calc(Vector v1, Vector v2);
+    /**
+     * Вычисляет расстояния "каждый с каждым" для кортежей значений сигнала
+     *
+     * @param timeSeriesVectors массив кортежей значений сигнала
+     * @return расстояние "каждый с каждым" между кортежами
+     */
+    public static Double[][] calcTimeSeriesCortegesDifferences(Double[][] timeSeriesVectors, LenCalculationMethod lenCalculationMethod) {
+        Double[][] timeSeriesDifferences = new Double[timeSeriesVectors.length][timeSeriesVectors.length];
+        for (int i = 0; i < timeSeriesDifferences.length; i++) {
+            for (int j = 0; j < timeSeriesDifferences[i].length; j++) {
+                double[] differences = new double[timeSeriesVectors[i].length];
+                for (int k = 0; k < differences.length; k++) {
+                    differences[k] = timeSeriesVectors[j][k] - timeSeriesVectors[i][k];
+                }
+                timeSeriesDifferences[i][j] = lenCalculationMethod.calc(differences);
+            }
+        }
+        return timeSeriesDifferences;
     }
 
-    private static class Vector {
-        private double x;
-        private double y;
-
-        Vector(double x, double y) {
-            this.x = x;
-            this.y = y;
-        }
-
-        public double getX() {
-            return x;
-        }
-
-        public void setX(double x) {
-            this.x = x;
-        }
-
-        public double getY() {
-            return y;
-        }
-
-        public void setY(double y) {
-            this.y = y;
-        }
+    /**
+     * Вычисляет параметр толеоряции
+     * @param timeSeriesCortegesDifferences матрица разностей между кортежами значений сигнала
+     * @param blackPointsPercent процент черных точек
+     * @return параметр толеряции
+     */
+    public static Double calcR(Double[][] timeSeriesCortegesDifferences, Double blackPointsPercent) {
+        //IMPL
+        return 0.5;
     }
 
+    /**
+     * Формирует изображение из матрицы разностей между кортежами значений сигнала
+     *
+     * @param timeSeriesDifferences матрица разностей между кортежами значений сигнала
+     * @param r                     папраметр толерации
+     * @return изображение из матрицы разностей
+     */
+    public static BufferedImage buildRecurrencePlotImage(Double[][] timeSeriesDifferences, Double r) {
+        BufferedImage recurrencePlotImage = new BufferedImage(timeSeriesDifferences.length, timeSeriesDifferences[0].length, BufferedImage.TYPE_INT_RGB);
+        for (int i = 0; i < recurrencePlotImage.getWidth(); i++) {
+            for (int j = 0; j < recurrencePlotImage.getHeight(); j++) {
+                recurrencePlotImage.setRGB(i, j, timeSeriesDifferences[i][j] <= r ? 0 : 0xFFFFFF);
+            }
+        }
+        return recurrencePlotImage;
+    }
 }
