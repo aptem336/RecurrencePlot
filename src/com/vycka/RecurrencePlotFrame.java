@@ -25,7 +25,7 @@ public class RecurrencePlotFrame extends JFrame {
             @Override
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
-                g.drawImage(Data.getRecurrencePlotImage(null), 0, 0,
+                g.drawImage(Data.getRecurrencePlotImage(), 0, 0,
                         RECURRENCE_PLOT_SIZE, RECURRENCE_PLOT_SIZE,
                         null);
             }
@@ -57,8 +57,8 @@ public class RecurrencePlotFrame extends JFrame {
 //        lenCalculationMethodButtonGroup.add(new JRadioButton("Infinity"));
 
         NumberFormatter blackPointsPercentNumberFormatter = new NumberFormatter(NumberFormat.getPercentInstance());
-        blackPointsPercentNumberFormatter.setMinimum(0);
-        blackPointsPercentNumberFormatter.setMaximum(1);
+//        blackPointsPercentNumberFormatter.setMinimum(0);
+//        blackPointsPercentNumberFormatter.setMaximum(1);
         JTextField blackPointsPercentTextField = new BoundFormattedJTextField<>(blackPointsPercentNumberFormatter, Data::getBlackPointsPercent, Data::setBlackPointsPercent, Double::parseDouble);
 
         controlsPanel.add(new JLabel("timeSeries index (1-8)"));

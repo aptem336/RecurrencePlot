@@ -1,5 +1,7 @@
 package com.vycka;
 
+import com.sun.xml.internal.ws.api.model.wsdl.WSDLOutput;
+
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -63,14 +65,22 @@ public class RecurrencePlot {
     }
 
     /**
-     * Вычисляет параметр толеоряции
+     * Вычисляет параметр толеряции
+     *
      * @param timeSeriesCortegesDifferences матрица разностей между кортежами значений сигнала
-     * @param blackPointsPercent процент черных точек
+     * @param blackPointsPercent            процент черных точек
      * @return параметр толеряции
      */
     public static Double calcR(Double[][] timeSeriesCortegesDifferences, Double blackPointsPercent) {
-        //IMPL
-        return 0.5;
+        double min = Double.MAX_VALUE;
+        double max = -Double.MAX_VALUE;
+        for (Double[] timeSeriesCortegesDifference : timeSeriesCortegesDifferences) {
+            for (Double jDouble : timeSeriesCortegesDifference) {
+                min = Math.min(jDouble, max);
+                max = Math.max(jDouble, max);
+            }
+        }
+        return min + (max - min) * blackPointsPercent;
     }
 
     /**
