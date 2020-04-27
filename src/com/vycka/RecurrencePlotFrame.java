@@ -93,7 +93,7 @@ public class RecurrencePlotFrame extends JFrame {
         JTextField blackPointsPercentTextField = new BoundFormattedJTextField<>(blackPointsPercentNumberFormatter, Data::getBlackPointsPercent, Data::setBlackPointsPercent, Double::parseDouble);
 
         NumberFormatter blackPointsPercentEpsNumberFormatter = new NumberFormatter(NumberFormat.getPercentInstance());
-        blackPointsPercentEpsNumberFormatter.setMinimum(0.0d);
+        blackPointsPercentEpsNumberFormatter.setMinimum(0.01d);
         blackPointsPercentEpsNumberFormatter.setMaximum(1.0d);
         JTextField blackPointsPercentEpsTextField = new BoundFormattedJTextField<>(blackPointsPercentEpsNumberFormatter, Data::getBlackPointsPercentEps, Data::setBlackPointsPercentEps, Double::parseDouble);
 
