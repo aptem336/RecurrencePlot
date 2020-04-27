@@ -88,9 +88,13 @@ public class RecurrencePlotFrame extends JFrame {
         infinity.addActionListener(e -> Data.setLenCalculationMethod(new LenCalculationMethod.InfinityCalculationMethod()));
 
         NumberFormatter blackPointsPercentNumberFormatter = new NumberFormatter(NumberFormat.getPercentInstance());
+        blackPointsPercentNumberFormatter.setMinimum(0.0d);
+        blackPointsPercentNumberFormatter.setMaximum(1.0d);
         JTextField blackPointsPercentTextField = new BoundFormattedJTextField<>(blackPointsPercentNumberFormatter, Data::getBlackPointsPercent, Data::setBlackPointsPercent, Double::parseDouble);
 
         NumberFormatter blackPointsPercentEpsNumberFormatter = new NumberFormatter(NumberFormat.getPercentInstance());
+        blackPointsPercentEpsNumberFormatter.setMinimum(0.0d);
+        blackPointsPercentEpsNumberFormatter.setMaximum(1.0d);
         JTextField blackPointsPercentEpsTextField = new BoundFormattedJTextField<>(blackPointsPercentEpsNumberFormatter, Data::getBlackPointsPercentEps, Data::setBlackPointsPercentEps, Double::parseDouble);
 
         controlsPanel.add(new JLabel("timeSeries index (1-8)"));
