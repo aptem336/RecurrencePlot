@@ -87,11 +87,7 @@ public class RecurrencePlot {
         double eps;
         do {
             eps = blackPointsPercent - x;
-            if (eps > 0) {
-                fx = linearInterpolation(x0, x1, fx0, fx1, blackPointsPercent);
-            } else {
-                fx = linearInterpolation(x1, x0, fx1, fx0, blackPointsPercent);
-            }
+            fx = linearInterpolation(x0, x1, fx0, fx1, blackPointsPercent);
             double blackPointsCount = 0;
             for (Double[] timeSeriesCortegesDifference : timeSeriesCortegesDifferences) {
                 for (Double jDouble : timeSeriesCortegesDifference) {
