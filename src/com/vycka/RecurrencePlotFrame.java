@@ -90,6 +90,9 @@ public class RecurrencePlotFrame extends JFrame {
         NumberFormatter blackPointsPercentNumberFormatter = new NumberFormatter(NumberFormat.getPercentInstance());
         JTextField blackPointsPercentTextField = new BoundFormattedJTextField<>(blackPointsPercentNumberFormatter, Data::getBlackPointsPercent, Data::setBlackPointsPercent, Double::parseDouble);
 
+        NumberFormatter blackPointsPercentEpsNumberFormatter = new NumberFormatter(NumberFormat.getPercentInstance());
+        JTextField blackPointsPercentEpsTextField = new BoundFormattedJTextField<>(blackPointsPercentEpsNumberFormatter, Data::getBlackPointsPercentEps, Data::setBlackPointsPercentEps, Double::parseDouble);
+
         controlsPanel.add(new JLabel("timeSeries index (1-8)"));
         controlsPanel.add(timeSeriesFileIndexTextField);
         controlsPanel.add(new JLabel("d >= 1"));
@@ -98,6 +101,8 @@ public class RecurrencePlotFrame extends JFrame {
         controlsPanel.add(DTextField);
         controlsPanel.add(new JLabel("black points percent"));
         controlsPanel.add(blackPointsPercentTextField);
+        controlsPanel.add(new JLabel("black points percent eps"));
+        controlsPanel.add(blackPointsPercentEpsTextField);
         controlsPanel.add(lenCalculationMethodButtonsPanel);
 
         JButton updateButton = new JButton("UPDATE");

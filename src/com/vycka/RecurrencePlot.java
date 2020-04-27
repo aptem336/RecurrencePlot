@@ -1,7 +1,5 @@
 package com.vycka;
 
-import com.sun.xml.internal.ws.api.model.wsdl.WSDLOutput;
-
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -69,18 +67,56 @@ public class RecurrencePlot {
      *
      * @param timeSeriesCortegesDifferences матрица разностей между кортежами значений сигнала
      * @param blackPointsPercent            процент черных точек
+     * @param blackPointsPercentEps         допустимая погрешность
      * @return параметр толеряции
      */
-    public static Double calcR(Double[][] timeSeriesCortegesDifferences, Double blackPointsPercent) {
-        double min = Double.MAX_VALUE;
-        double max = -Double.MAX_VALUE;
+    public static Double calcR(Double[][] timeSeriesCortegesDifferences, Double blackPointsPercent, Double blackPointsPercentEps) {
+        double fx0 = timeSeriesCortegesDifferences[0][0];
+        double fx1 = timeSeriesCortegesDifferences[0][0];
+        double fx;
         for (Double[] timeSeriesCortegesDifference : timeSeriesCortegesDifferences) {
             for (Double jDouble : timeSeriesCortegesDifference) {
-                min = Math.min(jDouble, max);
-                max = Math.max(jDouble, max);
+                fx0 = Math.min(jDouble, fx0);
+                fx1 = Math.max(jDouble, fx1);
             }
         }
-        return min + (max - min) * blackPointsPercent;
+        double x0 = 0;
+        double x1 = 1;
+        double x = 0;
+        do {
+            if (blackPointsPercent - x > 0) {
+                fx = linearInterpolation(x0, x1, fx0, fx1, blackPointsPercent);
+            } else {
+                fx = linearInterpolation(x1, x0, fx1, fx0, blackPointsPercent);
+            }
+            double blackPointsCount = 0;
+            for (Double[] timeSeriesCortegesDifference : timeSeriesCortegesDifferences) {
+                for (Double jDouble : timeSeriesCortegesDifference) {
+                    blackPointsCount += jDouble <= fx ? 1 : 0;
+                }
+            }
+            x = blackPointsCount / (timeSeriesCortegesDifferences.length * timeSeriesCortegesDifferences.length);
+
+            fx1 = fx0;
+            x1 = x0;
+            fx0 = fx;
+            x0 = x;
+        } while (Math.abs(blackPointsPercent - x) > blackPointsPercentEps);
+        return fx;
+    }
+
+    /**
+     * Линейная интерполяция
+     *
+     * @param x0  точка x0
+     * @param x1  точка x1
+     * @param fx0 значение функции в точке x0
+     * @param fx1 знаечние функции в точке x1
+     * @param x   искомая точка
+     * @return приближенное значение искомой точки
+     */
+    private static double linearInterpolation(double x0, double x1, double fx0, double fx1, double x) {
+        return fx0 + (fx1 - fx0) / (x1 - x0) * (x - x0);
     }
 
     /**

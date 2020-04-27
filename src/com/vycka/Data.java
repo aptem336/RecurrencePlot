@@ -9,6 +9,7 @@ public class Data {
     private static Integer D = 2;
     private static LenCalculationMethod lenCalculationMethod = new LenCalculationMethod.EuclidCalculationMethod();
     private static Double blackPointsPercent = 0.5;
+    private static Double blackPointsPercentEps = 0.1;
 
     private static BufferedImage recurrencePlotImage;
 
@@ -35,7 +36,7 @@ public class Data {
         }
         Double[][] timeSeriesCorteges = RecurrencePlot.collectTimeSeriesCorteges(timeSeries, D, d);
         Double[][] timeSeriesCortegesDifferences = RecurrencePlot.calcTimeSeriesCortegesDifferences(timeSeriesCorteges, lenCalculationMethod);
-        Double r = RecurrencePlot.calcR(timeSeriesCortegesDifferences, blackPointsPercent);
+        Double r = RecurrencePlot.calcR(timeSeriesCortegesDifferences, blackPointsPercent, blackPointsPercentEps);
         recurrencePlotImage = RecurrencePlot.buildRecurrencePlotImage(timeSeriesCortegesDifferences, r);
     }
 
@@ -78,5 +79,13 @@ public class Data {
 
     public static void setBlackPointsPercent(Double blackPointsPercent) {
         Data.blackPointsPercent = blackPointsPercent;
+    }
+
+    public static Double getBlackPointsPercentEps(Void aVoid) {
+        return blackPointsPercentEps;
+    }
+
+    public static void setBlackPointsPercentEps(Double blackPointsPercentEps) {
+        Data.blackPointsPercentEps = blackPointsPercentEps;
     }
 }
