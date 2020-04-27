@@ -83,10 +83,8 @@ public class RecurrencePlot {
         }
         double x0 = 0;
         double x1 = 1;
-        double x = 0;
-        double eps;
+        double x;
         do {
-            eps = blackPointsPercent - x;
             fx = linearInterpolation(x0, x1, fx0, fx1, blackPointsPercent);
             double blackPointsCount = 0;
             for (Double[] timeSeriesCortegesDifference : timeSeriesCortegesDifferences) {
@@ -103,7 +101,7 @@ public class RecurrencePlot {
             x1 = x0;
             fx0 = fx;
             x0 = x;
-        } while (Math.abs(eps) > blackPointsPercentEps);
+        } while (Math.abs(blackPointsPercent - x) > blackPointsPercentEps);
         return fx;
     }
 
