@@ -83,8 +83,10 @@ public class RecurrencePlot {
         double x0 = 0;
         double x1 = 1;
         double x = 0;
+        double eps;
         do {
-            if (blackPointsPercent - x > 0) {
+            eps = blackPointsPercent - x;
+            if (eps > 0) {
                 fx = linearInterpolation(x0, x1, fx0, fx1, blackPointsPercent);
             } else {
                 fx = linearInterpolation(x1, x0, fx1, fx0, blackPointsPercent);
@@ -101,7 +103,7 @@ public class RecurrencePlot {
             x1 = x0;
             fx0 = fx;
             x0 = x;
-        } while (Math.abs(blackPointsPercent - x) > blackPointsPercentEps);
+        } while (Math.abs(eps) > blackPointsPercentEps);
         return fx;
     }
 

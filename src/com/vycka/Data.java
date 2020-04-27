@@ -4,7 +4,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 
 public class Data {
-    private static Integer timeSeriesFileIndex = 7;
+    private static Integer timeSeriesFileIndex = 1;
     private static Integer d = 1;
     private static Integer D = 2;
     private static LenCalculationMethod lenCalculationMethod = new LenCalculationMethod.EuclidCalculationMethod();
