@@ -1,5 +1,6 @@
 package com.vycka;
 
+import javax.swing.*;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -98,7 +99,10 @@ public class RecurrencePlot {
                 }
             }
             x = blackPointsCount / (timeSeriesCortegesDifferences.length * timeSeriesCortegesDifferences.length);
-
+            if (x0 == x) {
+                JOptionPane.showMessageDialog(null, "Не удалось найти решение с заданной точностью!");
+                return null;
+            }
             fx1 = fx0;
             x1 = x0;
             fx0 = fx;

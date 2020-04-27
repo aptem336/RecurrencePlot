@@ -37,7 +37,9 @@ public class Data {
         Double[][] timeSeriesCorteges = RecurrencePlot.collectTimeSeriesCorteges(timeSeries, D, d);
         Double[][] timeSeriesCortegesDifferences = RecurrencePlot.calcTimeSeriesCortegesDifferences(timeSeriesCorteges, lenCalculationMethod);
         Double r = RecurrencePlot.calcR(timeSeriesCortegesDifferences, blackPointsPercent, blackPointsPercentEps);
-        recurrencePlotImage = RecurrencePlot.buildRecurrencePlotImage(timeSeriesCortegesDifferences, r);
+        if (r != null) {
+            recurrencePlotImage = RecurrencePlot.buildRecurrencePlotImage(timeSeriesCortegesDifferences, r);
+        }
     }
 
 
