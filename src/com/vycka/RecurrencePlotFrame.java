@@ -29,11 +29,11 @@ public class RecurrencePlotFrame extends JFrame {
                     max = Math.max(max, timeSeriesSignal);
                     min = Math.min(min, timeSeriesSignal);
                 }
-                double dx = (double) (getWidth() - 10) / timeSeries.length;
-                double dy = (getHeight() - 10) / Math.abs(max - min);
+                double dx = (double) getWidth() / timeSeries.length;
+                double dy = getHeight() / Math.abs(max - min);
                 for (int i = 0; i < timeSeries.length - 1; i++) {
-                    g.drawLine((int) (i * dx), (int) (timeSeries[i] * dy) + getHeight() / 2,
-                            (int) ((i + 1) * dx), (int) (timeSeries[i + 1] * dy) + getHeight() / 2);
+                    g.drawLine((int) (i * dx), (int) ((timeSeries[i] - max) * dy) + getHeight(),
+                            (int) ((i + 1) * dx), (int) ((timeSeries[i + 1] - max) * dy) + getHeight());
                 }
             }
         };
@@ -57,7 +57,7 @@ public class RecurrencePlotFrame extends JFrame {
 
         NumberFormatter timeSeriesFileIndexFormatter = new NumberFormatter(NumberFormat.getIntegerInstance());
         timeSeriesFileIndexFormatter.setMinimum(1);
-        timeSeriesFileIndexFormatter.setMaximum(8);
+        timeSeriesFileIndexFormatter.setMaximum(9);
         JTextField timeSeriesFileIndexTextField = new BoundFormattedJTextField<>(timeSeriesFileIndexFormatter, Data::getTimeSeriesFileIndex, Data::setTimeSeriesFileIndex, Integer::parseInt);
 
         NumberFormatter dNumberFormatter = new NumberFormatter(NumberFormat.getIntegerInstance());
